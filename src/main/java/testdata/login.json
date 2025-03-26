@@ -1,0 +1,11 @@
+{
+  "UserInfo_EntryPoint":
+  {
+    "UserInfo_EntryPoint_Flow":
+    {
+      "credential" : "login_Email_address,password",
+      "login_Email_address" : "red026@yopmail.com",
+      "password" : "Test@123"
+    }
+  }
+}
