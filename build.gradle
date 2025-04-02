@@ -1,0 +1,4 @@
+dependencies {
+    implementation 'org.seleniumhq.selenium:selenium-java:4.11.0'
+    implementation 'io.github.bonigarcia:webdrivermanager:5.5.3'
+}
