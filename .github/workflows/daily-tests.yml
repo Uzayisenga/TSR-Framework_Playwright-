@@ -1,0 +1,40 @@
+name: Daily Test Groups
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Runs daily at 00:00 UTC
+  workflow_dispatch: # Optional: Allow manual triggers
+
+jobs:
+  execute-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+
+      - name: Calculate Test Group
+        id: group
+        run: |
+          DAYS_SINCE_EPOCH=$(( $(date +%s) / 86400 ))
+          GROUP_NUMBER=$(( DAYS_SINCE_EPOCH % 3 + 1 )) # Cycles 1,2,3
+          echo "group=group$GROUP_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Run Tests
+        run: |
+          # Use Maven/Gradle to run tests with the calculated tag
+          mvn test -Dcucumber.filter.tags="@${{ steps.group.outputs.group }}"
+          # For Gradle: ./gradlew test -Dcucumber.filter.tags="@${{ steps.group.outputs.group }}"
+
+      - name: Upload Report to TrackSpace
+        env:
+          TRACKSPACE_API_KEY: ${{ secrets.TRACKSPACE_API_KEY }}
+        run: |
+          # Replace with your TrackSpace API command
+          curl -X POST -H "Authorization: Bearer $TRACKSPACE_API_KEY" \
+            -F "report=@target/cucumber-report.json" \
+            https://api.trackspace.com/reports
